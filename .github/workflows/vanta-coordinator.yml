@@ -1,9 +1,17 @@
 # The only holder of the task trigger token: an environment secret that only runs on main can read.
-# Runs main's code on a schedule or by manual dispatch, never on pull-request events.
-# It never checks out, runs or downloads pull-request content, and its token cannot write code.
+# Every trigger below runs main's workflow and main's code. It never checks out, runs or downloads
+# pull-request content, and its token cannot write code. Each run re-reads state and is idempotent,
+# so extra or late wake-ups cannot duplicate a start.
 name: vanta-coordinator
 on:
-  schedule:
+  # Wake-ups on GitHub events. GitHub delivered only 1 of about 71 scheduled slots in Stage 1.
+  workflow_run: # CI, vanta-guard or a submitted review finished (runs in main's context)
+    workflows: [ci, vanta-guard, review-relay]
+    types: [completed]
+  pull_request_target: # STOP label added or a PR reopened (runs main's code; the PR is not checked out)
+    types: [labeled, reopened]
+    branches: [main]
+  schedule: # best-effort timer only: review re-request, stall retry, deadline
     - cron: '7-59/10 * * * *'
   workflow_dispatch:
     inputs:

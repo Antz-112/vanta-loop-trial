@@ -1,0 +1,13 @@
+# Wake-up only. A submitted review starts this no-op job, and its completion wakes the coordinator
+# through workflow_run, which runs main's code. No checkout, no token permissions, no secrets.
+name: review-relay
+on:
+  pull_request_review:
+    types: [submitted]
+permissions: {}
+jobs:
+  relay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 1
+    steps:
+      - run: echo "review submitted; the coordinator wakes when this run completes"
