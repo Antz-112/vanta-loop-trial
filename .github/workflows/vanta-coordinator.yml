@@ -1,0 +1,42 @@
+# The only holder of the task trigger token: an environment secret that only runs on main can read.
+# Runs main's code on a schedule or by manual dispatch, never on pull-request events.
+# It never checks out, runs or downloads pull-request content, and its token cannot write code.
+name: vanta-coordinator
+on:
+  schedule:
+    - cron: '7-59/10 * * * *'
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'tick (normal check), drill (fire the no-op drill once), stop (end the run)'
+        type: choice
+        options: [tick, drill, stop]
+        default: tick
+permissions:
+  contents: read
+  statuses: write
+  checks: read
+  pull-requests: write
+  issues: write
+concurrency:
+  group: vanta-coordinator
+  cancel-in-progress: false
+jobs:
+  coordinate:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    environment: vanta-coordinator
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+      - run: node .github/vanta/coordinator.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          VANTA_ACTION: ${{ inputs.action || 'tick' }}
+          VANTA_ARMED: ${{ vars.VANTA_ARMED }}
+          VANTA_RUN_ID: ${{ vars.VANTA_RUN_ID }}
+          FIRE_URL: ${{ vars.CLAUDE_TASK_FIRE_URL }}
+          FIRE_TOKEN: ${{ secrets.CLAUDE_TASK_FIRE_TOKEN }}

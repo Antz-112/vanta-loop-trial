@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "deny": [
+      "WebFetch",
+      "WebSearch",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Edit(.github/**)",
+      "Write(.github/**)",
+      "Edit(.claude/**)",
+      "Write(.claude/**)",
+      "Edit(test/acceptance/**)",
+      "Write(test/acceptance/**)",
+      "Edit(AGENTS.md)",
+      "Write(AGENTS.md)",
+      "Edit(CLAUDE.md)",
+      "Write(CLAUDE.md)",
+      "Edit(SPEC.md)",
+      "Write(SPEC.md)",
+      "Edit(package.json)",
+      "Write(package.json)"
+    ]
+  }
+}

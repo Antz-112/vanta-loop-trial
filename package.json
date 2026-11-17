@@ -1,0 +1,8 @@
+{
+  "name": "vanta-loop-trial",
+  "private": true,
+  "description": "Synthetic repository for one bounded VANTA agent-loop trial.",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": { "test": "node --test" }
+}

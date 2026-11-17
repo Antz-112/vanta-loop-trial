@@ -1,0 +1,23 @@
+# Required check. pull_request_target runs the workflow and script from main, so a pull
+# request cannot change what this check does. It checks out main only and never checks out,
+# runs or downloads pull-request content: it reads the commit file lists through the API.
+name: vanta-guard
+on:
+  pull_request_target:
+    branches: [main]
+permissions:
+  contents: read
+  pull-requests: read
+jobs:
+  vanta-guard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+      - run: node .github/vanta/guard.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
