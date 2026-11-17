@@ -1,0 +1,1 @@
+STOP drill: this PR exists only to test the coordinator's STOP label. It is never merged.
